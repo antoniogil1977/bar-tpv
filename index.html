@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-title" content="Bar TPV">
 <title>Bar TPV</title>
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",Arial,sans-serif;background:#f4f5f7;color:#17181a}button,input{font:inherit}header{background:#fff;padding:18px 22px;position:sticky;top:0;z-index:5;border-bottom:1px solid #ddd;display:flex;justify-content:space-between;align-items:center}h1{margin:0;font-size:28px}.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:12px;background:#fff;position:sticky;top:72px;z-index:4}.tabs button{border:0;border-radius:14px;padding:15px 8px;background:#e9eaed;font-weight:700}.tabs button.active{background:#222;color:#fff}.page{padding:18px;max-width:1100px;margin:auto}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:14px}.card{background:#fff;border-radius:18px;padding:18px;box-shadow:0 2px 8px #0000000d;border:1px solid #e2e2e2}.table.open{background:#fff2d9;border-color:#f1bd58}.table h2{margin:0 0 8px}.money{font-size:24px;font-weight:800}.muted{color:#70747b}.row{display:flex;justify-content:space-between;align-items:center;gap:12px}.btn{border:0;border-radius:13px;padding:13px 16px;background:#e9eaed;font-weight:700}.primary{background:#1f7a45;color:white}.danger{background:#ffe3e3;color:#a30000}.small{padding:8px 11px}.modal-bg{position:fixed;inset:0;background:#0007;display:flex;align-items:flex-end;justify-content:center;z-index:20}.modal{background:#fff;border-radius:24px 24px 0 0;width:min(760px,100%);max-height:90vh;overflow:auto;padding:22px}.modal h2{margin-top:0}.products{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}.product{min-height:74px}.line{padding:11px 0;border-bottom:1px solid #eee}.total{font-size:30px;font-weight:900}.input{width:100%;padding:13px;border:1px solid #ccc;border-radius:12px;margin:6px 0 12px}.hidden{display:none}.badge{display:inline-block;padding:5px 9px;border-radius:20px;background:#e6f5eb;color:#18713c;font-size:13px;font-weight:700}
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",Arial,sans-serif;background:#f4f5f7;color:#17181a}button,input{font:inherit}header{background:#fff;padding:18px 22px;position:sticky;top:0;z-index:5;border-bottom:1px solid #ddd;display:flex;justify-content:space-between;align-items:center}h1{margin:0;font-size:28px}.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:12px;background:#fff;position:sticky;top:72px;z-index:4}.tabs button{border:0;border-radius:14px;padding:15px 8px;background:#e9eaed;font-weight:700}.tabs button.active{background:#222;color:#fff}.page{padding:18px;max-width:1100px;margin:auto}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:14px}.card{background:#fff;border-radius:18px;padding:18px;box-shadow:0 2px 8px #0000000d;border:1px solid #e2e2e2}.table.open{background:#fff2d9;border-color:#f1bd58}.table h2{margin:0 0 8px}.money{font-size:24px;font-weight:800}.muted{color:#70747b}.row{display:flex;justify-content:space-between;align-items:center;gap:12px}.btn{border:0;border-radius:13px;padding:13px 16px;background:#e9eaed;font-weight:700}.primary{background:#1f7a45;color:white}.danger{background:#ffe3e3;color:#a30000}.small{padding:8px 11px}.modal-bg{position:fixed;inset:0;background:#0007;display:flex;align-items:flex-end;justify-content:center;z-index:20}.modal{background:#fff;border-radius:24px 24px 0 0;width:min(760px,100%);max-height:90vh;overflow:auto;padding:22px}.modal h2{margin-top:0}.products{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}.product{min-height:74px}.line{padding:11px 0;border-bottom:1px solid #eee}.total{font-size:30px;font-weight:900}.input{width:100%;padding:13px;border:1px solid #ccc;border-radius:12px;margin:6px 0 12px}.hidden{display:none}.badge{display:inline-block;padding:5px 9px;border-radius:20px;background:#e6f5eb;color:#18713c;font-size:13px;font-weight:700}.product-card{text-align:center}.product-icon{font-size:42px;line-height:1.1;margin-bottom:6px}.small-icon{font-size:30px}.icon-choice{font-size:28px;padding:9px 2px;background:#f1f2f4}.icon-choice.selected{outline:3px solid #1f7a45;background:#e6f5eb}
 </style>
 </head>
 <body>
@@ -25,23 +25,58 @@ const euro=n=>new Intl.NumberFormat("es-ES",{style:"currency",currency:"EUR"}).f
 const save=()=>localStorage.setItem(KEY,JSON.stringify(data));
 const uid=()=>Math.random().toString(36).slice(2)+Date.now();
 function customerTotal(c){return c.items.reduce((s,x)=>s+x.price*x.qty,0)}
+function iconFor(p){
+  if(p.icon) return p.icon;
+  const n=String(p.name||"").toLowerCase();
+  if(/café|cafe/.test(n)) return "☕";
+  if(/caña|cerveza|beer/.test(n)) return "🍺";
+  if(/vino|vermut/.test(n)) return "🍷";
+  if(/refresco|coca|cola|fanta|sprite|tonica|tónica/.test(n)) return "🥤";
+  if(/agua/.test(n)) return "💧";
+  if(/bocadillo|sandwich|sándwich|tostada/.test(n)) return "🥪";
+  if(/patata|patatas/.test(n)) return "🍟";
+  if(/copa|gin|whisky|ron|vodka/.test(n)) return "🍸";
+  return "🍽️";
+}
 function render(page="tables"){document.querySelectorAll(".tabs button").forEach(b=>b.classList.toggle("active",b.dataset.page===page)); const app=document.getElementById("app");
  if(page==="tables") app.innerHTML=`<h2>Mesas</h2><div class="grid">${data.tables.map(t=>`<button class="card table ${t.customers.some(c=>!c.paid&&customerTotal(c)>0)?"open":""}" onclick="openTable('${t.number}')"><h2>Mesa ${t.number}</h2><div class="muted">${t.customers.filter(c=>!c.paid).length} clientes pendientes</div><div class="money">${euro(t.customers.filter(c=>!c.paid).reduce((s,c)=>s+customerTotal(c),0))}</div></button>`).join("")}</div>`;
  if(page==="bar") app.innerHTML=`<div class="row"><h2>Clientes en barra</h2><button class="btn primary" onclick="addBar()">+ Cliente</button></div><div class="grid">${data.bar.map(c=>customerCard(c,null)).join("")||'<div class="card muted">No hay clientes en barra.</div>'}</div>`;
- if(page==="products") app.innerHTML=`<div class="row"><h2>Productos</h2><button class="btn primary" onclick="addProduct()">+ Producto</button></div><div class="grid">${data.products.map(p=>`<div class="card"><b>${esc(p.name)}</b><div class="money">${euro(p.price)}</div><button class="btn danger small" onclick="delProduct('${p.id}')">Eliminar</button></div>`).join("")||'<div class="card muted">Añade el primer producto.</div>'}</div>`;
+ if(page==="products") app.innerHTML=`<div class="row"><h2>Productos</h2><button class="btn primary" onclick="addProduct()">+ Producto</button></div><div class="grid">${data.products.map(p=>`<div class="card product-card"><div class="product-icon">${iconFor(p)}</div><b>${esc(p.name)}</b><div class="money">${euro(p.price)}</div><button class="btn danger small" onclick="delProduct('${p.id}')">Eliminar</button></div>`).join("")||'<div class="card muted">Añade el primer producto.</div>'}</div>`;
  if(page==="cash") app.innerHTML=`<h2>Caja de hoy</h2><div class="card"><div class="money">${euro(data.sales.reduce((s,x)=>s+x.amount,0))}</div><div class="muted">${data.sales.length} cobros en efectivo</div></div><div class="card" style="margin-top:14px">${data.sales.slice().reverse().map(s=>`<div class="line row"><span>${esc(s.desc)}</span><b>${euro(s.amount)}</b></div>`).join("")||'<span class="muted">Todavía no hay cobros.</span>'}</div><button class="btn danger" style="margin-top:14px" onclick="closeDay()">Cerrar día y borrar caja</button>`;
 }
 function customerCard(c,table){return `<button class="card" onclick="openCustomer('${c.id}',${table===null?"null":table})"><div class="row"><b>${esc(c.name)}</b>${c.paid?'<span class="badge">Pagado</span>':''}</div><div class="money">${euro(customerTotal(c))}</div></button>`}
 function openTable(num){const t=data.tables.find(x=>x.number==num); modal(`<h2>Mesa ${num}</h2><button class="btn primary" onclick="addCustomer(${num})">+ Cliente</button><div style="margin-top:14px">${t.customers.map(c=>customerCard(c,num)).join("")||'<p class="muted">Añade un cliente para empezar.</p>'}</div><button class="btn" style="margin-top:14px" onclick="closeModal();render('tables')">Cerrar</button>`)}
-function openCustomer(id,table){let c=table===null?data.bar.find(x=>x.id===id):data.tables.find(t=>t.number==table).customers.find(x=>x.id===id); modal(`<h2>${esc(c.name)}</h2><div>${c.items.map(i=>`<div class="line row"><span>${i.qty} × ${esc(i.name)}</span><span>${euro(i.price*i.qty)}</span></div>`).join("")||'<p class="muted">Sin consumiciones.</p>'}</div><h2 class="total">${euro(customerTotal(c))}</h2><h3>Añadir consumición</h3><div class="products">${data.products.map(p=>`<button class="btn product" onclick="addItem('${c.id}','${p.id}',${table===null?"null":table})">${esc(p.name)}<br>${euro(p.price)}</button>`).join("")||'<p class="muted">Primero añade productos.</p>'}</div><button class="btn primary" style="width:100%;margin-top:16px" ${customerTotal(c)<=0||c.paid?"disabled":""} onclick="pay('${c.id}',${table===null?"null":table})">💶 Cobrar en efectivo ${euro(customerTotal(c))}</button><button class="btn" style="width:100%;margin-top:8px" onclick="closeModal()">Volver</button>`)}
+function openCustomer(id,table){let c=table===null?data.bar.find(x=>x.id===id):data.tables.find(t=>t.number==table).customers.find(x=>x.id===id); modal(`<h2>${esc(c.name)}</h2><div>${c.items.map(i=>`<div class="line row"><span>${i.qty} × ${esc(i.name)}</span><span>${euro(i.price*i.qty)}</span></div>`).join("")||'<p class="muted">Sin consumiciones.</p>'}</div><h2 class="total">${euro(customerTotal(c))}</h2><h3>Añadir consumición</h3><div class="products">${data.products.map(p=>`<button class="btn product" onclick="addItem('${c.id}','${p.id}',${table===null?"null":table})"><span class="product-icon small-icon">${iconFor(p)}</span><br>${esc(p.name)}<br>${euro(p.price)}</button>`).join("")||'<p class="muted">Primero añade productos.</p>'}</div><button class="btn primary" style="width:100%;margin-top:16px" ${customerTotal(c)<=0||c.paid?"disabled":""} onclick="pay('${c.id}',${table===null?"null":table})">💶 Cobrar en efectivo ${euro(customerTotal(c))}</button><button class="btn" style="width:100%;margin-top:8px" onclick="closeModal()">Volver</button>`)}
 function addItem(cid,pid,table){let c=table===null?data.bar.find(x=>x.id===cid):data.tables.find(t=>t.number==table).customers.find(x=>x.id===cid),p=data.products.find(x=>x.id===pid);let i=c.items.find(x=>x.pid===pid);i?i.qty++:c.items.push({pid:p.id,name:p.name,price:p.price,qty:1});save();openCustomer(cid,table)}
 function pay(cid,table){let c=table===null?data.bar.find(x=>x.id===cid):data.tables.find(t=>t.number==table).customers.find(x=>x.id===cid);let amount=customerTotal(c);if(!amount)return;c.paid=true;data.sales.push({amount,desc:table===null?`Barra · ${c.name}`:`Mesa ${table} · ${c.name}`,date:Date.now()});save();closeModal();table===null?render("bar"):openTable(table)}
 function addCustomer(table){modal(`<h2>Nuevo cliente</h2><input id="name" class="input" placeholder="Nombre o referencia"><button class="btn primary" onclick="saveCustomer(${table})">Añadir</button><button class="btn" onclick="closeModal()">Cancelar</button>`)}
 function saveCustomer(table){let name=document.getElementById("name").value.trim()||"Cliente";data.tables.find(t=>t.number==table).customers.push({id:uid(),name,items:[],paid:false});save();openTable(table)}
 function addBar(){modal(`<h2>Cliente de barra</h2><input id="name" class="input" placeholder="Nombre o referencia"><button class="btn primary" onclick="saveBar()">Añadir</button><button class="btn" onclick="closeModal()">Cancelar</button>`)}
 function saveBar(){data.bar.push({id:uid(),name:document.getElementById("name").value.trim()||"Cliente",items:[],paid:false});save();closeModal();render("bar")}
-function addProduct(){modal(`<h2>Nuevo producto</h2><input id="pname" class="input" placeholder="Nombre"><input id="pprice" class="input" inputmode="decimal" placeholder="Precio (€)"><button class="btn primary" onclick="saveProduct()">Guardar</button><button class="btn" onclick="closeModal()">Cancelar</button>`)}
-function saveProduct(){let name=document.getElementById("pname").value.trim(),price=parseFloat(document.getElementById("pprice").value.replace(",","."));if(!name||isNaN(price))return;data.products.push({id:uid(),name,price});save();closeModal();render("products")}
+function addProduct(){
+  modal(`<h2>Nuevo producto</h2>
+  <input id="pname" class="input" placeholder="Nombre">
+  <input id="pprice" class="input" inputmode="decimal" placeholder="Precio (€)">
+  <div class="muted" style="margin:4px 0 8px">Elige un icono</div>
+  <div id="iconChoices" style="display:grid;grid-template-columns:repeat(8,1fr);gap:8px;margin-bottom:14px">
+    ${["☕","🍺","🍷","🥤","💧","🥪","🍟","🍸"].map((x,i)=>`<button class="btn icon-choice ${i===0?"selected":""}" type="button" onclick="pickIcon('${x}',this)">${x}</button>`).join("")}
+  </div>
+  <button class="btn primary" onclick="saveProduct()">Guardar</button>
+  <button class="btn" onclick="closeModal()">Cancelar</button>`)
+}
+let selectedIcon="☕";
+function pickIcon(icon,el){
+  selectedIcon=icon;
+  document.querySelectorAll(".icon-choice").forEach(b=>b.classList.remove("selected"));
+  el.classList.add("selected");
+}
+function saveProduct(){
+  let name=document.getElementById("pname").value.trim(),price=parseFloat(document.getElementById("pprice").value.replace(",","."));
+  if(!name||isNaN(price))return;
+  data.products.push({id:uid(),name,price,icon:selectedIcon});
+  save();closeModal();render("products");
+  selectedIcon="☕";
+}
 function delProduct(id){data.products=data.products.filter(p=>p.id!==id);save();render("products")}
 function closeDay(){if(confirm("¿Cerrar el día y borrar la caja?")){data.sales=[];save();render("cash")}}
 function modal(html){const m=document.getElementById("modal");m.className="modal-bg";m.innerHTML=`<div class="modal">${html}</div>`}
