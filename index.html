@@ -58,6 +58,7 @@ function render(page="tables"){
     ${data.tables.map((t,i)=>floorTable(t,i)).join("")}
   </div>
   <div style="margin-top:14px" class="grid">${data.tables.map(t=>`<button class="card table ${tableTotal(t)>0?"open":""}" onclick="openTable('${t.number}')"><h2>Mesa ${t.number}</h2><div class="muted">${t.customers.filter(c=>!c.paid).length} clientes pendientes</div><div class="money">${euro(tableTotal(t))}</div></button>`).join("")}</div>`;
+  if(joinModeActive) renderJoinActions();
  }
  if(page==="bar")app.innerHTML=`<div class="row"><h2>Clientes en barra</h2><button class="btn primary" onclick="addBar()">+ Cliente</button></div><div class="grid">${data.bar.map(c=>customerCard(c,null)).join("")||'<div class="card muted">No hay clientes en barra.</div>'}</div>`;
  if(page==="products")app.innerHTML=`<div class="row"><h2>Productos</h2><button class="btn primary" onclick="addProduct()">+ Producto</button></div><div class="grid">${data.products.map(p=>`<div class="card product-card"><div class="product-icon">${iconFor(p)}</div><b>${esc(p.name)}</b><div class="money">${euro(p.price)}</div><button class="btn danger small" onclick="delProduct('${p.id}')">Eliminar</button></div>`).join("")||'<div class="card muted">Añade el primer producto.</div>'}</div>`;
@@ -68,10 +69,25 @@ function floorTable(t,i){
  return `<button class="floor-table ${tableTotal(t)>0?"open":""} ${t.customers.length&&tableTotal(t)===0?"paid":""} ${sel?"selected":""}" style="left:${p[0]}%;top:${p[1]}%;width:${p[2]}%;height:${p[3]}%" onclick="floorTap(${t.number})"><span>M${t.number}</span><small>${g?"🔗 ":""}${tableTotal(t)>0?euro(tableTotal(t)):"Libre"}</small></button>`;
 }
 let joinSelected=[];
-function joinMode(){joinSelected=[];render("tables");document.getElementById("joinHint").innerHTML=`<b>Modo unir mesas:</b> toca las mesas que quieras unir y después aparecerá el botón para unirlas.`;document.getElementById("plan").insertAdjacentHTML("afterend",`<div id="joinActions" class="plan-toolbar"><button class="btn primary" onclick="finishJoin()">🔗 Unir seleccionadas</button><button class="btn" onclick="cancelJoin()">Cancelar</button></div>`);}
-function floorTap(n){if(document.getElementById("joinActions")){if(joinSelected.includes(n))joinSelected=joinSelected.filter(x=>x!==n);else joinSelected.push(n);render("tables");if(!document.getElementById("joinActions"))return;document.getElementById("joinHint").innerHTML=`<b>Mesas seleccionadas: ${joinSelected.join(", ")||"ninguna"}</b>. Selecciona 2 o más.`;return}const g=groupFor(n);if(g)openGroup(g.id);else openTable(n)}
-function finishJoin(){if(joinSelected.length<2){alert("Selecciona al menos 2 mesas.");return}const id=uid();data.joinedGroups.push({id,tables:[...joinSelected]});save();joinSelected=[];render("tables")}
-function cancelJoin(){joinSelected=[];render("tables")}
+let joinModeActive=false;
+function joinMode(){joinModeActive=true;joinSelected=[];render("tables");}
+function renderJoinActions(){
+  const hint=document.getElementById("joinHint");
+  if(hint) hint.innerHTML=`<b>Modo unir mesas:</b> toca las mesas que quieras unir. Seleccionadas: ${joinSelected.join(", ")||"ninguna"}.`;
+  const plan=document.getElementById("plan");
+  if(plan && !document.getElementById("joinActions")) plan.insertAdjacentHTML("afterend",`<div id="joinActions" class="plan-toolbar"><button class="btn primary" onclick="finishJoin()">🔗 Unir seleccionadas</button><button class="btn" onclick="cancelJoin()">Cancelar</button></div>`);
+}
+function floorTap(n){
+  if(joinModeActive){
+    if(joinSelected.includes(n)) joinSelected=joinSelected.filter(x=>x!==n); else joinSelected.push(n);
+    render("tables");
+    renderJoinActions();
+    return;
+  }
+  const g=groupFor(n);if(g)openGroup(g.id);else openTable(n)
+}
+function finishJoin(){if(joinSelected.length<2){alert("Selecciona al menos 2 mesas.");return}const id=uid();data.joinedGroups.push({id,tables:[...joinSelected]});save();joinSelected=[];joinModeActive=false;render("tables")}
+function cancelJoin(){joinSelected=[];joinModeActive=false;render("tables")}
 function openGroup(id){const g=data.joinedGroups.find(x=>x.id===id);const tables=g.tables.map(n=>data.tables.find(t=>t.number==n));modal(`<h2>Mesas ${g.tables.join(" + ")}</h2><div class="hint">Mesas unidas para un grupo grande. Cada cliente mantiene su cuenta.</div><button class="btn primary" onclick="addCustomer(${g.tables[0]},'${g.id}')">+ Cliente</button><div style="margin-top:14px">${tables.flatMap(t=>t.customers.map(c=>customerCard(c,t.number))).join("")||'<p class="muted">Añade un cliente para empezar.</p>'}</div><button class="btn danger" style="margin-top:12px" onclick="splitGroup('${g.id}')">Separar mesas</button><button class="btn" style="margin-top:8px" onclick="closeModal();render('tables')">Cerrar</button>`)}
 function splitGroup(id){if(confirm("¿Separar estas mesas? Las cuentas de los clientes no se borrarán.")){data.joinedGroups=data.joinedGroups.filter(g=>g.id!==id);save();closeModal();render("tables")}}
 function customerCard(c,table){return `<button class="card" onclick="openCustomer('${c.id}',${table===null?"null":table})"><div class="row"><b>${esc(c.name)}</b>${c.paid?'<span class="badge">Pagado</span>':''}</div><div class="money">${euro(customerTotal(c))}</div></button>`}
