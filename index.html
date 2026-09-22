@@ -12,8 +12,16 @@
 header{background:#fff;padding:18px 22px;position:sticky;top:0;z-index:5;border-bottom:1px solid #ddd;display:flex;justify-content:space-between;align-items:center}h1{margin:0;font-size:28px}
 .tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:12px;background:#fff;position:sticky;top:72px;z-index:4}.tabs button{border:0;border-radius:14px;padding:15px 8px;background:#e9eaed;font-weight:700}.tabs button.active{background:#222;color:#fff}
 .page{padding:18px;max-width:1100px;margin:auto}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:14px}.card{background:#fff;border-radius:18px;padding:18px;box-shadow:0 2px 8px #0000000d;border:1px solid #e2e2e2}.table.open{background:#fff2d9;border-color:#f1bd58}.table h2{margin:0 0 8px}.money{font-size:24px;font-weight:800}.muted{color:#70747b}.row{display:flex;justify-content:space-between;align-items:center;gap:12px}.btn{border:0;border-radius:13px;padding:13px 16px;background:#e9eaed;font-weight:700}.primary{background:#1f7a45;color:white}.danger{background:#ffe3e3;color:#a30000}.small{padding:8px 11px}.modal-bg{position:fixed;inset:0;background:#0007;display:flex;align-items:flex-end;justify-content:center;z-index:20}.modal{background:#fff;border-radius:24px 24px 0 0;width:min(760px,100%);max-height:90vh;overflow:auto;padding:22px}.modal h2{margin-top:0}.products{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}.product{min-height:74px}.line{padding:11px 0;border-bottom:1px solid #eee}.total{font-size:30px;font-weight:900}.input{width:100%;padding:13px;border:1px solid #ccc;border-radius:12px;margin:6px 0 12px}.hidden{display:none}.badge{display:inline-block;padding:5px 9px;border-radius:20px;background:#e6f5eb;color:#18713c;font-size:13px;font-weight:700}.product-card{text-align:center}.product-icon{font-size:42px;line-height:1.1;margin-bottom:6px}.small-icon{font-size:30px}.icon-choice{font-size:28px;padding:9px 2px;background:#f1f2f4}.icon-choice.selected{outline:3px solid #1f7a45;background:#e6f5eb}
-.plan{position:relative;height:620px;background:#fff;border:2px solid #ddd;border-radius:24px;overflow:auto;min-width:680px}.room{position:absolute;border:2px solid #555;border-radius:12px;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-weight:800;color:#444}.room.bar{left:2%;bottom:4%;width:23%;height:18%;background:#ffe4c4}.room.kitchen{left:28%;bottom:4%;width:27%;height:18%;background:#e7e7e7}.room.office{right:3%;top:5%;width:18%;height:16%;background:#e7e7e7}
-.floor-table{position:absolute;border:0;border-radius:15px;background:#e8eaed;box-shadow:0 2px 5px #0002;font-weight:800;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px}.floor-table.open{background:#ffe3a8;border:3px solid #e0a52a}.floor-table.paid{background:#dff3e6}.floor-table.selected{outline:4px solid #1f7a45;outline-offset:2px}.floor-table span{font-size:18px}.floor-table small{font-size:11px;font-weight:600;margin-top:2px}.group-outline{position:absolute;border:4px solid #1f7a45;border-radius:18px;pointer-events:none;background:#e8eaed66;z-index:1}.floor-table.grouped{z-index:2;border-radius:10px;box-shadow:none}.floor-table.grouped.selected{outline:4px solid #1f7a45;outline-offset:-2px}
+
+/* Plano basado en la foto del bar */
+.plan{position:relative;height:620px;background:#fff;border:2px solid #ddd;border-radius:24px;overflow:auto;min-width:680px}
+.room{position:absolute;border:2px solid #555;border-radius:12px;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-weight:800;color:#444}
+.room.bar{left:2%;bottom:3%;width:34%;height:18%;background:#ffe4c4}
+.room.kitchen{left:36%;bottom:3%;width:34%;height:18%;background:#e7e7e7}
+.room.office{right:2%;top:4%;width:20%;height:38%;background:#f1f1f1;writing-mode:vertical-rl}
+.floor-table{position:absolute;border:0;border-radius:15px;background:#e8eaed;box-shadow:0 2px 5px #0002;font-weight:800;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px;z-index:2}
+.floor-table.open{background:#ffe3a8;border:3px solid #e0a52a}.floor-table.paid{background:#dff3e6}.floor-table.selected{outline:4px solid #1f7a45;outline-offset:2px}
+.floor-table span{font-size:18px}.floor-table small{font-size:11px;font-weight:600;margin-top:2px}.group-outline{position:absolute;border:4px solid #1f7a45;border-radius:18px;pointer-events:none;background:#e8eaed66;z-index:1}.floor-table.grouped{z-index:2;border-radius:10px;box-shadow:none}.floor-table.grouped.selected{outline:4px solid #1f7a45;outline-offset:-2px}
 .plan-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.hint{background:#fff;border-radius:14px;padding:12px;margin:10px 0;border:1px solid #ddd}
 @media(max-width:700px){.page{padding:12px}.plan{height:560px}.tabs{gap:6px}.tabs button{padding:13px 5px;font-size:14px}}
 </style>
@@ -44,12 +52,37 @@ function iconFor(p){
  if(/bocadillo|sandwich|sándwich|tostada/.test(n))return "🥪";if(/patata|patatas/.test(n))return "🍟";
  if(/copa|gin|whisky|ron|vodka/.test(n))return "🍸";if(/plato|combinado|hamburg|carne|pollo|ensalada/.test(n))return "🍽️";return "🍽️";
 }
+
+/* Posiciones del plano de la foto:
+   1 abajo-izquierda
+   2 izquierda-centro
+   3 arriba-izquierda
+   4 arriba-centro-izquierda
+   5 centro
+   6 y 7 juntos arriba
+   8 centro-derecha
+   9 arriba-derecha
+   10,11,12 en vertical
+   15,14,13 juntos abajo-derecha
+*/
 const positions=[
- [6,8,8,10],[27,7,8,10],[40,7,8,10],[48,7,8,10],[67,7,8,10],
- [5,28,8,10],[27,30,8,10],[45,29,8,10],
- [66,27,8,10],[66,38,8,10],[66,49,8,10],
- [8,50,8,10],[34,49,8,10],[47,49,8,10],[60,49,8,10]
+ [6,50,8,10],   // 1
+ [6,28,8,10],   // 2
+ [6,8,8,10],    // 3
+ [27,7,8,10],   // 4
+ [27,30,8,10],  // 5
+ [40,7,8,10],   // 6
+ [48,7,8,10],   // 7
+ [45,29,8,10],  // 8
+ [66,7,8,10],   // 9
+ [66,27,8,10],  // 10
+ [66,38,8,10],  // 11
+ [66,49,8,10],  // 12
+ [91,78,7,10],  // 13
+ [83,78,7,10],  // 14
+ [75,78,7,10]   // 15
 ];
+
 function groupFor(n){return data.joinedGroups.find(g=>g.tables.includes(n))}
 function render(page="tables"){
  document.querySelectorAll(".tabs button").forEach(b=>b.classList.toggle("active",b.dataset.page===page));
@@ -58,7 +91,7 @@ function render(page="tables"){
   app.innerHTML=`<div class="row"><h2>Mesas</h2><button class="btn" onclick="joinMode()">🔗 Unir mesas</button></div>
   <div class="hint" id="joinHint">Toca una mesa para abrirla. Para unir mesas, pulsa <b>Unir mesas</b> y selecciona 2 o más.</div>
   <div class="plan" id="plan">
-    <div class="room bar">Barra Bar</div><div class="room kitchen">Cocina</div><div class="room office">Oficina</div>
+    <div class="room bar">Barra</div><div class="room kitchen">Cocina</div><div class="room office">Oficina</div>
     ${renderGroupOutlines()}
     ${data.tables.map((t,i)=>floorTable(t,i)).join("")}
   </div>
